@@ -1,0 +1,9 @@
+.DS_Store
+
+*.xcuserstate
+.xcode.env.local
+
+node_modules/
+Pods/
+build/
+xcuserdata/
