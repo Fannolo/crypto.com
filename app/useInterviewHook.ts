@@ -2,8 +2,8 @@ import NativeInterviewModule, {
   InterviewEventsEmitter,
   FeatureFlagMap,
   FEATUREFLAG_DATA_CHANGED_EVENT,
-} from '../specs/NativeInterviewModule'
-import {useCallback, useEffect, useState} from 'react'
+} from '../specs/NativeInterviewModule';
+import { useCallback, useEffect, useState } from 'react';
 
 // TODO: Implement the native module interface
 // 1. Create a Turbo Module for price list fetching
@@ -11,23 +11,23 @@ import {useCallback, useEffect, useState} from 'react'
 // 3. Add proper TypeScript types
 
 export const useisEURSupportedFlagChange = () => {
-  const [isEURSupported, setIsEURSupported] = useState<boolean | null>(null)
+  const [isEURSupported, setIsEURSupported] = useState<boolean | null>(null);
 
   useEffect(() => {
     // TODO: Implement feature flag subscription
     // 1. Subscribe to feature flag changes
     // 2. Update state when flag changes
     // 3. Clean up subscription on unmount
-  }, [])
+  }, []);
 
   return {
     isEURSupported,
-  }
-}
+  };
+};
 
 export const useFetchPriceList = () => {
-  const {isEURSupported} = useisEURSupportedFlagChange()
-  const [priceList, setPriceList] = useState<CryptoCurrency[]>([])
+  const { isEURSupported } = useisEURSupportedFlagChange();
+  const [priceList, setPriceList] = useState<CryptoCurrency[]>([]);
 
   // TODO: Implement price list fetching
   // 1. Create a memoized fetch function
@@ -39,18 +39,18 @@ export const useFetchPriceList = () => {
   return {
     priceList,
     // TODO: Add loading and error states
-  }
-}
+  };
+};
 
 export interface CryptoCurrency {
-  id: number
-  name: string
-  usd: number
-  eur?: number
-  tags: string[]
+  id: number;
+  name: string;
+  usd: number;
+  eur?: number;
+  tags: string[];
 }
 
 // TODO: Implement price list normalization
 // 1. Handle both price formats (USD-only and USD/EUR)
 // 2. Add proper type checking
-// 3. Implement error handling for malformed data 
+// 3. Implement error handling for malformed data

@@ -1,0 +1,54 @@
+# Dependency directories
+node_modules/
+.npm/
+.yarn/
+
+# Build directories
+build/
+dist/
+coverage/
+
+# iOS specific
+ios/
+*.pbxproj
+*.xcworkspace/
+*.xcodeproj/
+*.plist
+*.lock
+*.podspec
+Podfile
+Podfile.lock
+*.xcconfig
+Pods/
+
+# Android specific
+android/
+*.gradle
+gradlew
+gradlew.bat
+local.properties
+*.iml
+*.hprof
+
+# Config files
+babel.config.js
+metro.config.js
+.eslintrc
+.buckconfig
+.flowconfig
+.watchmanconfig
+
+# Generated files
+*.lock
+yarn.lock
+package-lock.json
+
+# Misc
+.DS_Store
+.vscode/
+.idea/
+*.log
+*.jsbundle
+*.tsbuildinfo
+.env*
+

@@ -1,9 +1,8 @@
 module.exports = {
-    project: {
-      ios: {
-        sourceDir: './ios/CDC_Interview',
-      },
+  project: {
+    ios: {
+      sourceDir: './ios/CDC_Interview',
     },
-    asset: ['./assets/fonts'],
-  }
-  
+  },
+  asset: ['./assets/fonts'],
+};

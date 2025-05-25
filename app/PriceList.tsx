@@ -18,16 +18,15 @@ interface PriceData {
 }
 
 const PriceList: React.FC = () => {
-  const {priceList} = useFetchPriceList()
+  const { priceList } = useFetchPriceList();
   const [cryptoData, setCryptoData] = useState<CryptoCurrency[]>([]);
   const [filteredData, setFilteredData] = useState<CryptoCurrency[]>([]);
 
   useEffect(() => {
-    console.log('priceList', priceList)
-    
+    console.log('priceList', priceList);
+
     setCryptoData(priceList);
     setFilteredData(priceList);
-    
   }, [priceList]);
 
   // Format the price based on its value
@@ -57,13 +56,13 @@ const PriceList: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      
+
       {/* // TODO: Loading State */}
       {/* // TODO: Error State */}
       <FlatList
         data={filteredData}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={item => item.id.toString()}
         style={styles.list}
         showsVerticalScrollIndicator={false}
       />
@@ -107,7 +106,7 @@ const styles = StyleSheet.create({
     height: 0.5,
     backgroundColor: '#E5E5E5',
     marginTop: 8,
-  }
+  },
 });
 
-export default PriceList; 
+export default PriceList;
