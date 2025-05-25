@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { CryptoCurrency, useFetchPriceList, useisEURSupportedFlagChange } from './useInterviewHook';
 // Define the cryptocurrency data type
@@ -18,7 +19,8 @@ interface PriceData {
 }
 
 const PriceList: React.FC = () => {
-  const { priceList } = useFetchPriceList();
+  const { priceList, loading, error } = useFetchPriceList();
+  const isEURSupported = useisEURSupportedFlagChange();
   const [cryptoData, setCryptoData] = useState<CryptoCurrency[]>([]);
   const [filteredData, setFilteredData] = useState<CryptoCurrency[]>([]);
 
@@ -47,8 +49,10 @@ const PriceList: React.FC = () => {
   const renderItem = ({ item }: { item: CryptoCurrency }) => (
     <View style={styles.itemContainer}>
       <Text style={styles.nameText}>{item.name}</Text>
-      <Text style={styles.priceText}>USD: {formatPrice(item.usd)}</Text>
-      {/* // TODO: extend to show EUR price if EUR is available */}
+      <Text style={styles.priceText}>
+        USD: {formatPrice(item.usd)}
+        {isEURSupported && item.eur != null ? ` EUR: ${formatPrice(item.eur)}` : ''}
+      </Text>
       <View style={styles.separator} />
     </View>
   );
@@ -57,8 +61,16 @@ const PriceList: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      {/* // TODO: Loading State */}
-      {/* // TODO: Error State */}
+      {loading && (
+        <View style={styles.center}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
+      {error && (
+        <View style={styles.center}>
+          <Text style={styles.errorText}>Error: {error}</Text>
+        </View>
+      )}
       <FlatList
         data={filteredData}
         renderItem={renderItem}
@@ -106,6 +118,16 @@ const styles = StyleSheet.create({
     height: 0.5,
     backgroundColor: '#E5E5E5',
     marginTop: 8,
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    padding: 12,
   },
 });
 

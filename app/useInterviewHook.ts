@@ -28,6 +28,8 @@ export const useisEURSupportedFlagChange = () => {
 export const useFetchPriceList = () => {
   const { isEURSupported } = useisEURSupportedFlagChange();
   const [priceList, setPriceList] = useState<CryptoCurrency[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // TODO: Implement price list fetching
   // 1. Create a memoized fetch function
@@ -38,7 +40,8 @@ export const useFetchPriceList = () => {
 
   return {
     priceList,
-    // TODO: Add loading and error states
+    loading,
+    error,
   };
 };
 
