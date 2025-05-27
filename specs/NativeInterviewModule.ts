@@ -5,7 +5,16 @@ type Result<T, E = Error> = { type: 'success'; data: T } | { type: 'error'; erro
 
 export interface Spec extends TurboModule {
   // Example: fetch Data, Feel free to change the function name and parameters
-  fetchPriceList(): Promise<Result<Object, Error>>;
+  fetchPriceList(supportEUR: boolean): Promise<
+    Result<
+      Array<{
+        symbol: string;
+        usd: number;
+        eur?: number;
+      }>,
+      Error
+    >
+  >;
 }
 
 // - Turbo Module
