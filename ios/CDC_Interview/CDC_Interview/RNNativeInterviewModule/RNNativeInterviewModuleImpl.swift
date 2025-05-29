@@ -9,7 +9,7 @@ final class RNNativeInterviewModuleImpl: NSObject {
         self.featureFlagProvider = Dependency.shared.resolve(FeatureFlagProvider.self)!
     }
     
-    func fetchPriceList(supportEUR,
+    func fetchPriceList(_ supportEUR: Bool,
                             resolver: @escaping RCTPromiseResolveBlock,
                             rejecter: @escaping RCTPromiseRejectBlock
         ) {
