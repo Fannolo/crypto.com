@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -86,6 +86,10 @@
 		C746E8F6610E79E2567C6E95 /* Pods-CDC_Interview.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CDC_Interview.release.xcconfig"; path = "Target Support Files/Pods-CDC_Interview/Pods-CDC_Interview.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		16E774582DE8BEA800DC070B /* NavigationModule */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = NavigationModule; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		1F9670032C91A7E1004DB8FD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -133,6 +137,7 @@
 		1F9670082C91A7E1004DB8FD /* CDC_Interview */ = {
 			isa = PBXGroup;
 			children = (
+				16E774582DE8BEA800DC070B /* NavigationModule */,
 				1F9670092C91A7E1004DB8FD /* AppDelegate.swift */,
 				1F96700B2C91A7E1004DB8FD /* SceneDelegate.swift */,
 				1FC801072DC4A5EE00123F7C /* CDC_Interview-header.h */,
@@ -273,6 +278,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				16E774582DE8BEA800DC070B /* NavigationModule */,
+			);
 			name = CDC_Interview;
 			packageProductDependencies = (
 				1F9670212C91A8D5004DB8FD /* RxCocoa */,
@@ -379,9 +387,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-CDC_Interview/Pods-CDC_Interview-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-CDC_Interview/Pods-CDC_Interview-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -396,9 +408,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-CDC_Interview/Pods-CDC_Interview-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-CDC_Interview/Pods-CDC_Interview-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -569,10 +585,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -631,10 +644,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
