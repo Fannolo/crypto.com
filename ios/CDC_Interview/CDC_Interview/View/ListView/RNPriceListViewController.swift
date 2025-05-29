@@ -12,12 +12,8 @@ class RNPriceListViewController: UIViewController {
         let appDel = UIApplication.shared.delegate as! RCTAppDelegate
         
         let rctRootViewFactory = appDel.rootViewFactory
-        print("description: \(rctRootViewFactory.description)")
         let newArchOn    = appDel.newArchEnabled()
-        print("new-arch: \(newArchOn)") // this is true which means we are using the new architecture to render UI components in the view controller
-        self.view = rctRootViewFactory.view(withModuleName: "CDC_Interview", initialProperties: nil)
-        
-        
+        self.view = rctRootViewFactory.view(withModuleName: "CDC_Interview", initialProperties: nil)   
     }
     
 }

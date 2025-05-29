@@ -5,11 +5,6 @@ import NativeInterviewModule, {
 } from '../specs/NativeInterviewModule';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// TODO: Implement the native module interface
-// 1. Create a Turbo Module for price list fetching
-// 2. Implement event emitter for feature flag changes
-// 3. Add proper TypeScript types
-
 export const useIsEURSupportedFlagChange = () => {
   const [isEURSupported, setIsEURSupported] = useState<boolean | null>(null);
 
@@ -46,15 +41,12 @@ export const useFetchPriceList = () => {
     setLoading(true);
     setError(null);
 
-    console.log('use fetch price list isEURSupported', isEURSupported);
-
     try {
       const result = await NativeInterviewModule?.fetchPriceList(Boolean(isEURSupported));
 
       if (!isMountedRef.current) return;
 
       const transformedData: CryptoCurrency[] = result.map(item => {
-        console.log({ item });
         return {
           id: item.id,
           name: item.name,
@@ -88,8 +80,6 @@ export const useFetchPriceList = () => {
       isMountedRef.current = false;
     };
   }, []);
-
-  console.log({ loading });
 
   return {
     priceList,

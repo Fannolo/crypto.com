@@ -14,7 +14,6 @@ final class RNNativeInterviewModuleImpl: NSObject {
                             rejecter: @escaping RCTPromiseRejectBlock
         ) {
             let supportEUR1 = featureFlagProvider.getValue(falg: .supportEUR)
-        print("RNNativeInterviewModuleImpl featureflag \(supportEUR1)")
         Task {
             do {
                 if supportEUR1 {
