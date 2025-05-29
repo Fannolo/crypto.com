@@ -70,10 +70,11 @@
       "node"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(jest-)?@?react-native|@react-native-community|@react-navigation)"
+      "node_modules/(?!(jest-)?@?react-native|@react-native-community|@react-navigation)",
+      "/node_modules/(?!(@react-native|react-native)/).*/"
     ],
     "setupFilesAfterEnv": [
-      "<rootDir>/jest.setup.js"
+      "@testing-library/react-native/extend-expect"
     ],
     "testPathIgnorePatterns": [
       "<rootDir>/node_modules/",
@@ -82,6 +83,9 @@
     ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/app/$1"
-    }
+    },
+    "setupFiles": [
+      "./node_modules/react-native/jest/setup.js"
+    ]
   }
 }
