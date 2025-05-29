@@ -8,9 +8,6 @@ class RNPriceListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let jsURL = RCTBundleURLProvider.sharedSettings()
-                      .jsBundleURL(forBundleRoot: "index")!
-        
         
         let appDel = UIApplication.shared.delegate as! RCTAppDelegate
         

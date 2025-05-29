@@ -1,83 +1,140 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   Text,
   View,
   FlatList,
-  TextInput,
   TouchableOpacity,
   StatusBar,
   ActivityIndicator,
+  RefreshControl,
+  NativeModules,
+  ListRenderItem,
 } from 'react-native';
-import { CryptoCurrency, useFetchPriceList, useisEURSupportedFlagChange } from './useInterviewHook';
-// Define the cryptocurrency data type
+import { CryptoCurrency, useFetchPriceList, useIsEURSupportedFlagChange } from './useInterviewHook';
 
-interface PriceData {
-  code: string;
-  data: CryptoCurrency[];
-}
+// Native navigation module to communicate with iOS
+const { NavigationModule } = NativeModules;
 
 const PriceList: React.FC = () => {
-  const { priceList, loading, error } = useFetchPriceList();
-  const isEURSupported = useisEURSupportedFlagChange();
-  const [cryptoData, setCryptoData] = useState<CryptoCurrency[]>([]);
-  const [filteredData, setFilteredData] = useState<CryptoCurrency[]>([]);
+  const { priceList, loading, error, refetch } = useFetchPriceList();
+  const isEURSupported = useIsEURSupportedFlagChange();
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    console.log('priceList', priceList);
-
-    setCryptoData(priceList);
-    setFilteredData(priceList);
-  }, [priceList]);
+  // Handle pull-to-refresh
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
 
   // Format the price based on its value
   const formatPrice = (price: number): string => {
     if (price >= 1) {
-      // For values greater than or equal to 1, show up to 2 decimal places
       return price.toFixed(2);
     } else if (price >= 0.01) {
-      // For values between 0.01 and 1, show up to 2 decimal places
-      return price.toFixed(2);
+      return price.toFixed(4);
     } else {
-      // For very small values, show more decimal places as needed
-      return price.toFixed(5);
+      return price.toFixed(8);
+    }
+  };
+
+  // Handle item press for navigation
+  const handleItemPress = (item: CryptoCurrency) => {
+    // Call native module to navigate to detail view
+    if (NavigationModule && NavigationModule.navigateToDetail) {
+      NavigationModule.navigateToDetail(item.id);
     }
   };
 
   // Render each cryptocurrency item
-  const renderItem = ({ item }: { item: CryptoCurrency }) => (
-    <View style={styles.itemContainer}>
-      <Text style={styles.nameText}>{item.name}</Text>
-      <Text style={styles.priceText}>
-        USD: {formatPrice(item.usd)}
-        {isEURSupported && item.eur != null ? ` EUR: ${formatPrice(item.eur)}` : ''}
-      </Text>
+  const renderItem: ListRenderItem<CryptoCurrency> = ({ item }) => (
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={() => handleItemPress(item)}
+      activeOpacity={0.7}
+    >
+      <View style={styles.itemContent}>
+        <Text style={styles.nameText}>{item.name}</Text>
+        <View style={styles.priceContainer}>
+          <Text style={styles.priceText}>USD: ${formatPrice(item.usd)}</Text>
+          {isEURSupported && item.eur != null && (
+            <Text style={styles.priceText}>EUR: €{formatPrice(item.eur)}</Text>
+          )}
+        </View>
+        {item.tags && item.tags.length > 0 && (
+          <View style={styles.tagsContainer}>
+            {item.tags.map((tag, index) => (
+              <View key={`${item.id}-${tag}-${index}`} style={styles.tag}>
+                <Text style={styles.tagText}>{tag}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
       <View style={styles.separator} />
-    </View>
+    </TouchableOpacity>
   );
+
+  // Key extractor for FlatList optimization
+  const keyExtractor = useCallback((item: CryptoCurrency) => item.id.toString(), []);
+
+  // Get item layout for performance optimization
+  const getItemLayout = useCallback(
+    (data: ArrayLike<CryptoCurrency> | null | undefined, index: number) => ({
+      length: 100, // Approximate height of each item
+      offset: 100 * index,
+      index,
+    }),
+    []
+  );
+
+  // Empty list component
+  const ListEmptyComponent = () => {
+    if (loading) return null;
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>No cryptocurrencies available</Text>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      {loading && (
+      {loading && priceList.length === 0 ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Loading prices...</Text>
         </View>
-      )}
-      {error && (
+      ) : error ? (
         <View style={styles.center}>
           <Text style={styles.errorText}>Error: {error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={refetch}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
         </View>
+      ) : (
+        <FlatList
+          data={priceList}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#007AFF" />
+          }
+          getItemLayout={getItemLayout}
+          ListEmptyComponent={ListEmptyComponent}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={10}
+          removeClippedSubviews={true}
+        />
       )}
-      <FlatList
-        data={filteredData}
-        renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
-        style={styles.list}
-        showsVerticalScrollIndicator={false}
-      />
     </SafeAreaView>
   );
 };
@@ -85,49 +142,93 @@ const PriceList: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // Add this to make it very visible
-  },
-  searchContainer: {
-    padding: 10,
-    backgroundColor: '#F5F5F5',
-  },
-  searchInput: {
-    height: 40,
     backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    fontSize: 16,
   },
   list: {
     flex: 1,
   },
+  listContent: {
+    paddingBottom: 20,
+  },
   itemContainer: {
-    paddingVertical: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  itemContent: {
+    paddingVertical: 12,
     paddingHorizontal: 16,
   },
   nameText: {
     fontSize: 18,
+    fontWeight: '600',
     color: '#000000',
+    marginBottom: 4,
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
   },
   priceText: {
     fontSize: 14,
-    marginTop: 2,
     color: '#333333',
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    marginTop: 8,
+    gap: 8,
+  },
+  tag: {
+    backgroundColor: '#F0F0F0',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  tagText: {
+    fontSize: 12,
+    color: '#666666',
   },
   separator: {
     height: 0.5,
     backgroundColor: '#E5E5E5',
-    marginTop: 8,
+    marginLeft: 16,
   },
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666666',
   },
   errorText: {
-    color: 'red',
+    color: '#FF3B30',
     fontSize: 16,
-    padding: 12,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666666',
   },
 });
 

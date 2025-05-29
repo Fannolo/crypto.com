@@ -3,21 +3,27 @@ import NativeInterviewModule, {
   FeatureFlagMap,
   FEATUREFLAG_DATA_CHANGED_EVENT,
 } from '../specs/NativeInterviewModule';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 // TODO: Implement the native module interface
 // 1. Create a Turbo Module for price list fetching
 // 2. Implement event emitter for feature flag changes
 // 3. Add proper TypeScript types
 
-export const useisEURSupportedFlagChange = () => {
+export const useIsEURSupportedFlagChange = () => {
   const [isEURSupported, setIsEURSupported] = useState<boolean | null>(null);
 
   useEffect(() => {
-    // TODO: Implement feature flag subscription
-    // 1. Subscribe to feature flag changes
-    // 2. Update state when flag changes
-    // 3. Clean up subscription on unmount
+    const listener = InterviewEventsEmitter.addListener(
+      FEATUREFLAG_DATA_CHANGED_EVENT,
+      (flags: FeatureFlagMap) => {
+        if (typeof flags.supportEUR === 'boolean') {
+          setIsEURSupported(flags.supportEUR);
+        }
+      }
+    );
+    setIsEURSupported(false);
+    return () => listener.remove();
   }, []);
 
   return {
@@ -26,22 +32,70 @@ export const useisEURSupportedFlagChange = () => {
 };
 
 export const useFetchPriceList = () => {
-  const { isEURSupported } = useisEURSupportedFlagChange();
+  const isEURSupported = useIsEURSupportedFlagChange();
   const [priceList, setPriceList] = useState<CryptoCurrency[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
 
-  // TODO: Implement price list fetching
-  // 1. Create a memoized fetch function
-  // 2. Handle both USD and EUR price formats
-  // 3. Implement proper error handling
-  // 4. Add loading state
-  // 5. Optimize re-renders using proper hooks
+  const fetchPrices = useCallback(async () => {
+    if (!NativeInterviewModule) {
+      setError('Native module not available');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+
+    console.log('use fetch price list isEURSupported', isEURSupported);
+
+    try {
+      const result = await NativeInterviewModule?.fetchPriceList(Boolean(isEURSupported));
+
+      if (!isMountedRef.current) return;
+
+      const transformedData: CryptoCurrency[] = result.map(item => {
+        console.log({ item });
+        return {
+          id: item.id,
+          name: item.name,
+          usd: item.usd,
+          eur: item.eur,
+          tags: item.tags,
+        };
+      });
+
+      setPriceList(transformedData);
+      setLoading(false);
+    } catch (err) {
+      if (!isMountedRef.current) return;
+
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch price list';
+      setError(errorMessage);
+      console.error('Error fetching price list:', err);
+    } finally {
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
+    }
+  }, [isEURSupported]);
+
+  useEffect(() => {
+    fetchPrices();
+  }, [fetchPrices]);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  console.log({ loading });
 
   return {
     priceList,
     loading,
     error,
+    refetch: fetchPrices,
   };
 };
 
@@ -52,8 +106,3 @@ export interface CryptoCurrency {
   eur?: number;
   tags: string[];
 }
-
-// TODO: Implement price list normalization
-// 1. Handle both price formats (USD-only and USD/EUR)
-// 2. Add proper type checking
-// 3. Implement error handling for malformed data

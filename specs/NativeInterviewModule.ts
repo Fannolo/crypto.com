@@ -1,20 +1,9 @@
 import type { TurboModule } from 'react-native';
 import { NativeModules, NativeEventEmitter, TurboModuleRegistry } from 'react-native';
-
-type Result<T, E = Error> = { type: 'success'; data: T } | { type: 'error'; error: E };
+import { CryptoCurrency } from '../app/useInterviewHook';
 
 export interface Spec extends TurboModule {
-  // Example: fetch Data, Feel free to change the function name and parameters
-  fetchPriceList(supportEUR: boolean): Promise<
-    Result<
-      Array<{
-        symbol: string;
-        usd: number;
-        eur?: number;
-      }>,
-      Error
-    >
-  >;
+  fetchPriceList(supportEUR: boolean): Promise<Array<CryptoCurrency>>;
 }
 
 // - Turbo Module
